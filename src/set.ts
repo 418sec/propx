@@ -25,6 +25,9 @@ function propSetter(object: Object, path: string, value: any): Object {
 		const type: string = typeof value;
 		return value !== null && (type === 'object' || type === 'function');
 	}
+	function isBlackListed(key: string): boolean {
+		return /^__proto__|constructor|prototype$/.test(key);
+	}
 
 	if (!isObject(object) || typeof path !== 'string') {
 		return JSON.parse(JSON.stringify(object));
@@ -35,6 +38,10 @@ function propSetter(object: Object, path: string, value: any): Object {
 
 	for (let i: number = 0; i < pathAr.length; i++) {
 		const p = pathAr[i];
+
+		if(isBlackListed(p)) {
+			return;
+		}
 
 		if (!isObject(object[p])) {
 			object[p] = {};
